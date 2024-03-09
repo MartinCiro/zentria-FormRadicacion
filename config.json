@@ -18,5 +18,9 @@
         "key": "gAAAAABl5ieh1-zyIdTmrtqcs1f_47kcV96Zu8sZ506qDoETCCO4H2PTMUjEcjzI6tup8TjrlvcYLFCBtJVOaKX-JAyGATnDAzujU-ESO2TU8QNotEFm7lGVbOP3adzH2pyvA1NkfGAz",
         "workFlowURL": "https://api.na.electroneek.com/v1/orchestrator/workflow/id/launch",
         "idWorkFlow": "1"
+    },
+    "Variables": {
+        "URLApi": "https://zentria-db.azurewebsites.net",
+        "URLApiRadicacion": "https://radicados-zentria.azurewebsites.net"
     }
 }

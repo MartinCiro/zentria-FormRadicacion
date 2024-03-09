@@ -29,6 +29,15 @@ class Ejecucion:
         y se re asignaran sus valores luego de que se
         complete el formulario.
         """
+        self.formIPS = ""
+        self.formEPS = ""
+        self.formCotnrato = ""
+        self.formRegimen = ""
+        self.formSegmento = ""
+        self.formFecha = ""
+        self.formValidacion = ""
+        
+        
         self.dataRadicarFecha = ""
         self.dataRadicarNumero = ""
         self.dataRadicarEPS = ""
@@ -115,3 +124,9 @@ class Ejecucion:
         response = requests.post(self.__urlNeekApi.replace("id", self.__idNeekApi), headers=headers)
 
         print(response.text)
+    
+    def orquestarEjecucion(self):
+        """
+        Este metodo se encargará de gestionar la ejecución de los datos.
+        """
+        return True
