@@ -76,7 +76,8 @@ class VentanaPrincipalForm:
         self.__listadoEPS.insert(0, "-- Selecciona una EPS --") # Se les añade una opción por Deafult
         self.__listadoContratos.insert(0, "-- Selecciona un Contrato --") # Se les añade una opción por Deafult
         self.__listadoRegimen = ["-- Selecciona un Regimen --", "Subsidiado", "Contributivo"]
-        self.__listadoSegmentos = ["-- Selecciona un segmetno de ejecución --", "1) Generar RIPS", "2) Reprocesar RIPS", "3) Cargar Soportes"]
+        self.__listadoSegmentos = (helpers.getValue("SegmentosFormulario", "segmentos")).split("|")
+        self.__listadoEstados = ["-- Selecciona un estado --", "RADICADO", "ENVIADO"]
 
         tipoIPS = StringVar() # Asignación de tipo a una variable
         tipoEPS = StringVar() # Asignación de tipo a una variable
@@ -98,43 +99,34 @@ class VentanaPrincipalForm:
                 
         # Metodo para validar los campos para ejecutar el proceso
         def validatefields():
-            print(txtFechaProceso.get())
-            print(txtRelacionEnvio.get())
             if("Selecciona" in tipoIPS.get()):
                 messagebox.showwarning(message = "No has seleccionado una [IPS] aún", title = "¡ERROR!")
-                return False
-            if("Selecciona" in tipoEPS.get()):
+            elif("Selecciona" in tipoEPS.get()):
                 messagebox.showwarning(message = "No has seleccionado una [EPS] aún", title = "¡ERROR!")
-                return False
-            if("Selecciona" in tipoContrato.get()):
+            elif("Selecciona" in tipoContrato.get()):
                 messagebox.showwarning(message = "No has seleccionado un [CONTRATO] aún", title = "¡ERROR!")
-                return False
-            if("Selecciona" in tipoRegimen.get()):
+            elif("Selecciona" in tipoRegimen.get()):
                 messagebox.showwarning(message = "No has seleccionado un [REGIMEN] aún", title = "¡ERROR!")
-                return False
-            if("Selecciona" in tipoSegmento.get()):
+            elif("Selecciona" in tipoSegmento.get()):
                 messagebox.showwarning(message = "No has seleccionado un [SEGMENTO] aún", title = "¡ERROR!")
-                return False
-            if "Selecciona" not in tipoSegmento.get() and "RIPS" in tipoSegmento.get() and (txtFechaProceso.get() == "" or txtRelacionEnvio.get() == ""):
+            elif "Selecciona" not in tipoSegmento.get() and "RIPS" in tipoSegmento.get() and (txtFechaProceso.get() == "" or txtRelacionEnvio.get() == ""):
                 messagebox.showerror(message = f"Has seleccionado como segmento: [-- {tipoSegmento.get()} --].\n\nPero no has configurado correctamente los datos para fecha y relación de envío.", title = "¡ERROR!")
-                return False
             else:
                 return True
 
         # Metodo para ejecutar el procesos principal
         def Execute(): 
             try:
-                print(f"validatefields() == {validatefields()}")
                 if validatefields():
                     continuar = messagebox.askyesno(message="¿Estás seguro de ejecutar el proceso?", title = "Espera...")
                     if(continuar):
-                        ejec.formIPS = tipoIPS.get()
-                        ejec.formEPS = tipoEPS.get()
-                        ejec.formCotnrato = tipoContrato.get()
-                        ejec.formRegimen = tipoRegimen.get()
-                        ejec.formSegmento = tipoSegmento.get()
-                        ejec.formFecha = txtFechaProceso.get()
-                        ejec.formValidacion = txtRelacionEnvio.get()
+                        ejec.formIPS = tipoIPS.get().strip()
+                        ejec.formEPS = tipoEPS.get().strip()
+                        ejec.formCotnrato = tipoContrato.get().strip()
+                        ejec.formRegimen = tipoRegimen.get().strip()
+                        ejec.formSegmento = tipoSegmento.get().strip()
+                        ejec.formFecha = txtFechaProceso.get().strip()
+                        ejec.formValidacion = txtRelacionEnvio.get().strip()
                         validacion = ejec.orquestarEjecucion()
                         if(validacion):
                             messagebox.showinfo(message = "Se ha iniciado la ejecución con éxito, ya puedes cerrar esta ventana.", title = "¡Éxito!")
@@ -226,6 +218,15 @@ class VentanaPrincipalForm:
         tipoRegimen.current(0)
         tipoRegimen.grid(row = 7, column = 0, padx = 0, pady = 2,  sticky = "ew")
         tipoRegimen.bind("<<ComboboxSelected>>", setTipoSeleccion)
+
+        # Label para ComboBox de Estados de radicación
+        lblRadicacionRegimen = ttk.Label(frameLeft, text = "Seleccionar estado de (Relación envío):", font = ('Times', 12), background = '#fcfcfc', width = 25)
+        lblRadicacionRegimen.grid(row = 8, column = 0, padx = 0, pady = (10, 2),  sticky = "ew")
+        # ComboBox seleccionar el contrato con la EPS
+        tipoRegimen = ttk.Combobox(frameLeft, values = self.__listadoEstados, width = 30, font = ('Times', 10))
+        tipoRegimen.current(0)
+        tipoRegimen.grid(row = 9, column = 0, padx = 0, pady = 2,  sticky = "ew")
+        tipoRegimen.bind("<<ComboboxSelected>>", setTipoSeleccion)
         
         # =========================================================================
         # | Frame Left Body
@@ -272,10 +273,10 @@ class VentanaPrincipalForm:
 
         # Configuración adicional para agregar botones en la parte inferior.
         frameBtns = tk.Frame(frameRight, bd=0, relief=tk.SOLID,bg='#fcfcfc', padx=0, pady=5)
-        frameBtns.grid(row=8, column=0, padx=0, pady=0,  sticky="ew")
+        frameBtns.grid(row= 10, column=0, padx=0, pady=0,  sticky="ew")
 
-        btnContratos = ttk.Button(frameBtns, text = "Validación y ejecución de proceso", style = "Accent.TButton", width = 70, command = Execute)
-        btnContratos.grid(row = 9, column = 0, columnspan = 2, padx = 0, pady = 10)
+        btnEjecutar = ttk.Button(frameBtns, text = "Validación y ejecución de proceso", style = "Accent.TButton", width = 70, command = Execute)
+        btnEjecutar.grid(row = 11, column = 0, columnspan = 2, padx = 0, pady = 10)
         
         # Endregion - rightbody
         # Endregion  - Cuerpo principal del formulario 

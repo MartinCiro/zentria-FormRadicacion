@@ -8,19 +8,17 @@
     "FolderIco": {
         "Value": "\\vendor\\imgs\\Folder.png"
     },
-    "DataConex": {
-        "host": "gAAAAABl5hyYQAyVM8ZTqFlhLFYly7GevoeD6oZvhfWFbFNOL6RPmvWhUifmCkOQFDUyOy8bR42W4cgk4-jNnkjEuaVLoGe9Sw==",
-        "dabd": "gAAAAABl5hyYW7idxPoirBHjCPYTLaP-GdwZXQ4UZ3Hb7n5frb2ugWxrZU_83MlCi-D5TktyJY0mgrjCGlXmZUGRyq0r2mwvPw==",
-        "user": "gAAAAABl5hyYdHkzw7eygTV_uxWab3FGmwYKj16MfpRIT6TPVusw3elY_HZFhBx1xv0E5O-dIf_unUQsDqJkLOs8854krb65Nw==",
-        "pass": "gAAAAABl5hyYcNuVqfsskzPa4yESngiKfmwJR7oCLFwo9uCxLRCQ-Fa0iN35rqL7gjljeAQmPCe07tPaqGTBdSnwYJo1htFkVA=="
-    },
     "APINeek": {
-        "key": "gAAAAABl5ieh1-zyIdTmrtqcs1f_47kcV96Zu8sZ506qDoETCCO4H2PTMUjEcjzI6tup8TjrlvcYLFCBtJVOaKX-JAyGATnDAzujU-ESO2TU8QNotEFm7lGVbOP3adzH2pyvA1NkfGAz",
-        "workFlowURL": "https://api.na.electroneek.com/v1/orchestrator/workflow/id/launch",
-        "idWorkFlow": "1"
+        "key": "gAAAAABl-326a88wb9h5aslKyj12ckXkre-xj2nm1rjfgpqiFhOjLKuX5Qu2qG8syxWHLbcIA1RsF-7SScURYdYnEuTfNeZskGLlnHCoEXgebB4jRHYSCIt5wz92YOAEWc2K86QlU6t2",
+        "workFlowURL": "https://api.latam.electroneek.com/v1/orchestrator/workflow/$id$/launch",
+        "idWorkFlowGeneracionRIPS": "65f31bb077fffb1c66a7024f",
+        "idWorkFlowCargarSoportesSFTP": ""
     },
     "Variables": {
-        "URLApi": "https://zentria-db.azurewebsites.net",
-        "URLApiRadicacion": "https://radicados-zentria.azurewebsites.net"
-    }
+        "URLApi": "http://172.206.196.43:3200",
+        "URLApiRadicacion": "http://172.206.196.43:3100"
+    },
+    "SegmentosFormulario": {
+        "segmentos": "-- Selecciona un segmento de ejecucion --|1) Generacion de RIPS - GomediSys|2) Cargar Soportes NEPS - FTP|3) Actualizar fecha relación de envío"
+   }
 }
