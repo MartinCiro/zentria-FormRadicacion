@@ -1,0 +1,24 @@
+{
+    "IconPrincipal": {
+        "Value": "\\vendor\\imgs\\yawiLogo.png"
+    },
+    "LogoYawi": {
+        "Value": "\\vendor\\imgs\\yawiLogo.png"
+    },
+    "FolderIco": {
+        "Value": "\\vendor\\imgs\\Folder.png"
+    },
+    "APINeek": {
+        "key": "gAAAAABl-326a88wb9h5aslKyj12ckXkre-xj2nm1rjfgpqiFhOjLKuX5Qu2qG8syxWHLbcIA1RsF-7SScURYdYnEuTfNeZskGLlnHCoEXgebB4jRHYSCIt5wz92YOAEWc2K86QlU6t2",
+        "workFlowURL": "https://api.latam.electroneek.com/v1/orchestrator/workflow/$id$/launch",
+        "idWorkFlowGeneracionRIPS": "65f31bb077fffb1c66a7024f",
+        "idWorkFlowCargarSoportesSFTP": "65f9c3f977fffb1c6616f446"
+    },
+    "Variables": {
+        "URLApi": "http://172.206.196.43:3200",
+        "URLApiRadicacion": "http://172.206.196.43:3100"
+    },
+    "SegmentosFormulario": {
+        "segmentos": "-- Selecciona un segmento de ejecucion --|1) Generacion de RIPS - GomediSys|2) Cargar Soportes NEPS - FTP|3) Actualizar fecha relacion de envio"
+   }
+}
