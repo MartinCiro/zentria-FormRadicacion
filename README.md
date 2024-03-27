@@ -2,12 +2,13 @@
 
 Aplicativo de formulario, encargado de recopilar la data necesaria para la ejecución del bot de armado de cuentas y renombre del proyecto Zentria.
 
-## Programa para volver una aplicacion PyInstaller
+## Parametros para ejecución
 
-* Con ventana de cmd para ver errores
+Este formulario toma datos traídos desde el endpoint ***http://172.206.196.43:3200/consultarSedes*** de manera que podrá obtener la información de:
 
-> py -m PyInstaller --onefile --icon="icono"
+* EPS registradas
+* IPS registradas
 
-* Sin Ventana de cmd para ver errores
+* Contratos
 
-> py -m PyInstaller --onefile --windowed --icon="icono"
+De esa manera podremos pintar los datos en el formulario, para luego ser envíados al endpoint ***http://172.206.196.43:3100Mongo/datosFormulario*** y de esa manera cargar la información de la solicitud según el segmento deseado.

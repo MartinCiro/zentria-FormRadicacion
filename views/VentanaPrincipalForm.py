@@ -109,7 +109,7 @@ class VentanaPrincipalForm:
                 messagebox.showwarning(message = "No has seleccionado un [REGIMEN] aún", title = "¡ERROR!")
             elif("Selecciona" in tipoSegmento.get()):
                 messagebox.showwarning(message = "No has seleccionado un [SEGMENTO] aún", title = "¡ERROR!")
-            elif "Selecciona" not in tipoSegmento.get() and "RIPS" in tipoSegmento.get() and (txtFechaProceso.get() == "" or txtRelacionEnvio.get() == ""):
+            elif "RIPS" in tipoSegmento.get() and (txtFechaProceso.get().strip() == "" or txtRelacionEnvio.get().strip() == ""):
                 messagebox.showerror(message = f"Has seleccionado como segmento: [-- {tipoSegmento.get()} --].\n\nPero no has configurado correctamente los datos para fecha y relación de envío.", title = "¡ERROR!")
             else:
                 return True
@@ -220,13 +220,13 @@ class VentanaPrincipalForm:
         tipoRegimen.bind("<<ComboboxSelected>>", setTipoSeleccion)
 
         # Label para ComboBox de Estados de radicación
-        lblRadicacionRegimen = ttk.Label(frameLeft, text = "Seleccionar estado de (Relación envío):", font = ('Times', 12), background = '#fcfcfc', width = 25)
-        lblRadicacionRegimen.grid(row = 8, column = 0, padx = 0, pady = (10, 2),  sticky = "ew")
+        lblEstadoRelacion = ttk.Label(frameLeft, text = "Seleccionar estado de (Relación envío):", font = ('Times', 12), background = '#fcfcfc', width = 25)
+        lblEstadoRelacion.grid(row = 8, column = 0, padx = 0, pady = (10, 2),  sticky = "ew")
         # ComboBox seleccionar el contrato con la EPS
-        tipoRegimen = ttk.Combobox(frameLeft, values = self.__listadoEstados, width = 30, font = ('Times', 10))
-        tipoRegimen.current(0)
-        tipoRegimen.grid(row = 9, column = 0, padx = 0, pady = 2,  sticky = "ew")
-        tipoRegimen.bind("<<ComboboxSelected>>", setTipoSeleccion)
+        tipoEstado = ttk.Combobox(frameLeft, values = self.__listadoEstados, width = 30, font = ('Times', 10))
+        tipoEstado.current(0)
+        tipoEstado.grid(row = 9, column = 0, padx = 0, pady = 2,  sticky = "ew")
+        tipoEstado.bind("<<ComboboxSelected>>", setTipoSeleccion)
         
         # =========================================================================
         # | Frame Left Body
