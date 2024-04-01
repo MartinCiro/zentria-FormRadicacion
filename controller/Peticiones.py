@@ -54,11 +54,11 @@ class Peticiones:
             print(f"\t - URL: {self.__urlAPIRadicacion}/{self.__dictEndpoints["subirFormulario"]}")
             res = rq.post(
                 url = f"{self.__urlAPIRadicacion}/{self.__dictEndpoints["subirFormulario"]}",
-                json = dumps(datosFormulario, indent = 4),
+                json = datosFormulario,
                 timeout = 10
             )
             respuesta = loads(res.text)
-            print(respuesta)
+            print(f"\n Respuesta de la carga de info al formulario: \n - {respuesta}")
         except Exception as e:
             print(f"Falló en la carga de datos del formulario, error: {e}")
         finally:
