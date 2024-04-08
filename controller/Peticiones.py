@@ -1,3 +1,4 @@
+import json
 import requests as rq
 from json import loads, dumps
 from controller.utils.Helpers import Helpers
@@ -26,6 +27,7 @@ class Peticiones:
         self.__urlAPI = helper.getValue("Variables", "URLApi")
         self.__urlAPIRadicacion = helper.getValue("Variables", "URLApiRadicacion")
         self.__dictEndpoints = {
+            "estadoRadicado": "postgres/EstadoRadicado",
             "consultarSedes": "postgres/consultarSedes",
             "subirFormulario": "mongo/datosFormulario"
         }
@@ -35,14 +37,18 @@ class Peticiones:
         Metodo encargado de la consulta de sedes actuales
         del proyecto de Zentria.
         """
-        response = []
-        try:
-            res = rq.get(f"{self.__urlAPI}/{self.__dictEndpoints["consultarSedes"]}", timeout = 10)
-            response = loads(res.text)
-        except Exception as e:
-            print(f"Error al generar la petición para la consulta de sedes, error: {e}")
-        finally:
-            return response
+        max_intentos = 3
+        intento = 0
+        while intento < max_intentos:
+            intento += 1
+            try:
+                res = rq.get(f"{self.__urlAPI}/{self.__dictEndpoints['consultarSedes']}", timeout=10)
+                response = loads(res.text)
+                return response
+            except Exception as e:
+                print(f"Error al generar la petición para la consulta de sedes, intento {intento} de {max_intentos}, error: {e}")
+        print("Se excedió el número máximo de intentos.")
+        return None
 
     def subirDatosFormulario(self, datosFormulario: dict):
         """
@@ -51,9 +57,9 @@ class Peticiones:
         """
         respuesta = []
         try:
-            print(f"\t - URL: {self.__urlAPIRadicacion}/{self.__dictEndpoints["subirFormulario"]}")
+            print(f"\t - URL: {self.__urlAPIRadicacion}/{self.__dictEndpoints['subirFormulario']}")
             res = rq.post(
-                url = f"{self.__urlAPIRadicacion}/{self.__dictEndpoints["subirFormulario"]}",
+                url = f"{self.__urlAPIRadicacion}/{self.__dictEndpoints['subirFormulario']}",
                 json = datosFormulario,
                 timeout = 10
             )
@@ -84,7 +90,7 @@ class Peticiones:
         finally:
             return exito
     
-    def actualizarFechaRelacionEnvio(self, relacionEnvio: str, fecha: str, estado: str):
+    def actualizarFechaRelacionEnvio(self, datos: dict, segmento: str):
         """
         Este metodo actualizará la fecha y el estado de una relación
         de envío dada, mediante un endpoint.
@@ -93,4 +99,6 @@ class Peticiones:
             `fecha (str):` Fecha a actualizar en campo (Fecha Radicado || Fecha relación envío)
             `estado (str):` Estado para actualizar en la relación de envío
         """
+        data = json.dumps(datos)
+        res = rq.post(f"{self.__urlAPIRadicacion}/{self.__dictEndpoints['estadoRadicado']}/{segmento}", data=data, timeout=30)        
         # ! TODO

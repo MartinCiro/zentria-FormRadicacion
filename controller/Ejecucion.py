@@ -4,6 +4,7 @@
 # Region - Importación de librerias y clases.
 from controller.Peticiones import Peticiones
 from controller.utils.Helpers import Helpers
+from datetime import datetime
 # Endregion - Importación de librerias y clases.
 
 # Region - Inicialización de clases para uso de metodos.
@@ -29,37 +30,65 @@ class Ejecucion:
         """
         self.formIPS = ""
         self.formEPS = ""
-        self.formCotnrato = ""
+        self.formContrato = ""
         self.formRegimen = ""
         self.formSegmento = ""
+        self.formEstado = ""
         self.formFecha = ""
         self.formValidacion = ""
 
         self.__botEjecutar = ""
 
-    def _definirDataAPI(self):
+    def _definirMongoDataAPI(self):
         """
         Este metodo se encargará de setear la data para
         ser enviada a la API de Radicación de Zentria y
         así poder ser consultada por otros bots.
         """
+        if not self.formFecha:
+            self.formFecha = datetime.now().strftime("%Y/%m/%d")
         dictDatosFormulario = {
             "ips": self.formIPS,
             "eps": self.formEPS,
-            "contrato": self.formCotnrato,
+            "contrato": self.formContrato,
             "regimen": self.formRegimen,
+            "estado": self.formEstado,
             "segmento": self.formSegmento,
             "fecha": self.formFecha,
             "numero_relacion_envio": self.formValidacion
         }
-        if("1" in self.formSegmento):
-            self.__botEjecutar = "idWorkFlowGeneracionRIPS"
-        if("2" in self.formSegmento):
-            self.__botEjecutar = "idWorkFlowCargarSoportesSFTP"
-        if("2" in self.formSegmento):
-            self.__botEjecutar = "idWorkFlowCargarSoportesSFTP"
-        return dictDatosFormulario
+        return dictDatosFormulario            
+        
     
+    def _definirPostgresDataAPI(self):
+        """
+        Este metodo se encargará de setear la data para
+        ser enviada a la API de Radicación de Zentria y
+        así poder ser consultada por otros bots.
+        """
+        if not self.formFecha:
+            self.formFecha = datetime.now().strftime("%Y/%m/%d")
+        objetoDato={
+                "numero_radicado": self.formValidacion,
+                "fecha_rips": "",
+                "fecha_soporte": "",
+                "fecha_eapb": ""
+        }            
+        if("2" in self.formSegmento):
+            # El 2 no ejecuta bot
+            #self.__botEjecutar = "idWorkFlowCargarSoportesSFTP"
+            objetoDato["fecha_rips"] = self.formFecha
+            return objetoDato, "certificado-rips"
+        if("3" in self.formSegmento):
+            #self.__botEjecutar = "idWorkFlowCargarSoportesSFTP"
+            objetoDato["fecha_soporte"] = self.formFecha
+            return objetoDato, "soportes-eapb"
+        if("4" in self.formSegmento):
+            #self.__botEjecutar = "idWorkFlowCargarSoportesSFTP"
+            objetoDato["fecha_eapb"] = self.formFecha
+            return objetoDato, "radicado-eapb"
+        
+
     def orquestarEjecucion(self):
         """
         Este metodo se encargará de validar el tipo de proceso
@@ -68,12 +97,16 @@ class Ejecucion:
         """
         exito = { "status": False, "mensaje": "" }
         try:
-            datos = self._definirDataAPI()
-            peti.subirDatosFormulario(datos)
-            if("3" not in self.formSegmento):
+            if("1" in self.formSegmento):
+                self.__botEjecutar = "idWorkFlowGeneracionRIPS"
                 peti.ejecutarBotElectroNeek(self.__botEjecutar)
-            else:
-                peti.actualizarFechaRelacionEnvio(datos["numero_relacion_envio"], datos["fecha"], "RADICADO ENTIDAD")
+                datos = self._definirMongoDataAPI()
+                peti.subirDatosFormulario(datos)
+                return
+            if("2" not in self.formSegmento):
+                peti.ejecutarBotElectroNeek(self.__botEjecutar)
+            datos, segmento = self._definirPostgresDataAPI()
+            peti.actualizarFechaRelacionEnvio(datos, segmento)
         except Exception as e:
             exito["mensaje"] = f"Ocurrió un error en la ejecución del formulario, error: {e}"
         finally:

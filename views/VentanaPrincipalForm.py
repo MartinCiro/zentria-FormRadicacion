@@ -5,6 +5,7 @@
 import tkinter as tk
 from tkinter import ttk
 from itertools import groupby
+from datetime import datetime
 from tkinter import StringVar, messagebox
 
 from controller.Ejecucion import Ejecucion
@@ -84,6 +85,7 @@ class VentanaPrincipalForm:
         tipoContrato = StringVar() # Asignación de tipo a una variable
         tipoRegimen = StringVar() # Asignación de tipo a una variable
         tipoSegmento = StringVar() # Asignación de tipo a una variable
+        tipoEstado = StringVar() # Asignación de tipo a una variable
 
         self.dfExcel = ""
         # Endregion - Variables globales a usar dentro del form
@@ -109,7 +111,7 @@ class VentanaPrincipalForm:
                 messagebox.showwarning(message = "No has seleccionado un [REGIMEN] aún", title = "¡ERROR!")
             elif("Selecciona" in tipoSegmento.get()):
                 messagebox.showwarning(message = "No has seleccionado un [SEGMENTO] aún", title = "¡ERROR!")
-            elif "RIPS" in tipoSegmento.get() and (txtFechaProceso.get().strip() == "" or txtRelacionEnvio.get().strip() == ""):
+            elif "GomediSys" not in tipoSegmento.get() and (txtFechaProceso.get().strip() == "" or txtRelacionEnvio.get().strip() == ""):
                 messagebox.showerror(message = f"Has seleccionado como segmento: [-- {tipoSegmento.get()} --].\n\nPero no has configurado correctamente los datos para fecha y relación de envío.", title = "¡ERROR!")
             else:
                 return True
@@ -122,8 +124,9 @@ class VentanaPrincipalForm:
                     if(continuar):
                         ejec.formIPS = tipoIPS.get().strip()
                         ejec.formEPS = tipoEPS.get().strip()
-                        ejec.formCotnrato = tipoContrato.get().strip()
+                        ejec.formContrato = tipoContrato.get().strip()
                         ejec.formRegimen = tipoRegimen.get().strip()
+                        ejec.formEstado = tipoEstado.get().strip()
                         ejec.formSegmento = tipoSegmento.get().strip()
                         ejec.formFecha = txtFechaProceso.get().strip()
                         ejec.formValidacion = txtRelacionEnvio.get().strip()
@@ -182,34 +185,37 @@ class VentanaPrincipalForm:
         frameLeft = tk.Frame(frame_form, bd = 0, relief = tk.SOLID, bg = '#fcfcfc', padx = 20, pady = 0)
         frameLeft.pack(side = "left", expand = tk.YES, fill = tk.BOTH)
         
+        # Apartado IPS
         # Label para ComboBox
         lblRadicacionIPS = ttk.Label(frameLeft, text = "IPS del proceso actual:", font = ('Times', 12), background = '#fcfcfc', width = 25)
         lblRadicacionIPS.grid(row = 0, column = 0, padx = 0, pady = (10, 2),  sticky = "ew")
-        
         # ComboBox seleccionar IPS
         tipoIPS = ttk.Combobox(frameLeft, values = self.__listadoIPS, width = 30)
         tipoIPS.current(0)
         tipoIPS.grid(row = 1, column = 0, padx = 0, pady = 2,  sticky = "ew")
         tipoIPS.bind("<<ComboboxSelected>>", setTipoSeleccion)
         
+        # Apartado radicacionEPS
         # Label para ComboBox
         lblRadicacionEPS = ttk.Label(frameLeft, text = "EPS para proceso de radicación:", font = ('Times', 12), background = '#fcfcfc', width = 25)
         lblRadicacionEPS.grid(row = 2, column = 0, padx = 0, pady = (10, 2),  sticky = "ew")
         # ComboBox seleccionar EPS
-        tipoEPS = ttk.Combobox(frameLeft, values = self.__listadoEPS, width = 30, font = ('Times', 7))
+        tipoEPS = ttk.Combobox(frameLeft, values = self.__listadoEPS, width = 30, font = ('Times', 7), state="readonly")
         tipoEPS.current(0)
         tipoEPS.grid(row = 3, column = 0, padx = 0, pady = 2,  sticky = "ew")
         tipoEPS.bind("<<ComboboxSelected>>", setTipoSeleccion)
 
+        # Apartado radicacion contrato
         # Label para ComboBox
-        lblRadicacionContrato = ttk.Label(frameLeft, text = "Selecciona uno de los contrato:", font = ('Times', 12), background = '#fcfcfc', width = 25)
+        lblRadicacionContrato = ttk.Label(frameLeft, text = "Selecciona uno de los contratos:", font = ('Times', 12), background = '#fcfcfc', width = 25)
         lblRadicacionContrato.grid(row = 4, column = 0, padx = 0, pady = (10, 2),  sticky = "ew")
         # ComboBox seleccionar el contrato con la EPS
-        tipoContrato = ttk.Combobox(frameLeft, values = self.__listadoContratos, width = 30, font = ('Times', 7))
+        tipoContrato = ttk.Combobox(frameLeft, values = self.__listadoContratos, width = 30, font = ('Times', 7), state="readonly")
         tipoContrato.current(0)
         tipoContrato.grid(row = 5, column = 0, padx = 0, pady = 2,  sticky = "ew")
         tipoContrato.bind("<<ComboboxSelected>>", setTipoSeleccion)
 
+        # Apartado radicacion regimen
         # Label para ComboBox
         lblRadicacionRegimen = ttk.Label(frameLeft, text = "Selecciona un tipo de regimen:", font = ('Times', 12), background = '#fcfcfc', width = 25)
         lblRadicacionRegimen.grid(row = 6, column = 0, padx = 0, pady = (10, 2),  sticky = "ew")
@@ -219,6 +225,7 @@ class VentanaPrincipalForm:
         tipoRegimen.grid(row = 7, column = 0, padx = 0, pady = 2,  sticky = "ew")
         tipoRegimen.bind("<<ComboboxSelected>>", setTipoSeleccion)
 
+        # Apartado radicacion estado relacion
         # Label para ComboBox de Estados de radicación
         lblEstadoRelacion = ttk.Label(frameLeft, text = "Seleccionar estado de (Relación envío):", font = ('Times', 12), background = '#fcfcfc', width = 25)
         lblEstadoRelacion.grid(row = 8, column = 0, padx = 0, pady = (10, 2),  sticky = "ew")
@@ -237,6 +244,7 @@ class VentanaPrincipalForm:
         # Label para ComboBox
         lblRadicacionRegimen = ttk.Label(frameRight, text = "Selecciona un segmento de ejecución:", font = ('Times', 12), background = '#fcfcfc', width = 25)
         lblRadicacionRegimen.grid(row = 0, column = 0, padx = 0, pady = (10, 2),  sticky = "ew")
+
         # ComboBox seleccionar el contrato con la EPS
         tipoSegmento = ttk.Combobox(frameRight, values = self.__listadoSegmentos, width = 30, font = ('Times', 10))
         tipoSegmento.current(0)
@@ -256,11 +264,11 @@ class VentanaPrincipalForm:
         # Label Fecha del radicado
         lblFechaProceso = ttk.Label(frameRight, text = "Fecha de configuración para RIPS [2023-03-15]", font = ('Times',  10), background = '#fcfcfc')
         lblFechaProceso.grid(row = 4, column = 0, padx = 2, pady = 0, sticky = "w")
-        
         # Cuadro de texto de la fecha del radicado
         txtFechaProceso = ttk.Entry(frameRight, width=70)
         txtFechaProceso.grid(row=5, column=0, padx=0, pady=(2, 10), sticky="ew")
-        txtFechaProceso.insert(0,"")
+        #txtFechaProceso.insert(0,"")
+        txtFechaProceso.insert(0, datetime.today().strftime('%Y/%m/%d'))
         
         # Label para el número de Radicado
         lblRelacionEnvio = ttk.Label(frameRight, text = "Escribe el número de relación de Envío en caso de ser necesario", font = ('Times', 10), background = '#fcfcfc')
