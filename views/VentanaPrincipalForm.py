@@ -53,22 +53,41 @@ class VentanaPrincipalForm:
         
         # Función para obtener la clave de agrupación por cada dato de la respuesta de la API
         def agrupacionDict(dictAgrupar: dict):
-            return (dictAgrupar["nombre_ips"], dictAgrupar["nombre_eps"], dictAgrupar["nit_eps"])
-
-        agrupar = groupby(self.__dataSedes, agrupacionDict) # Agrupación de las sedes
-        self.__dataAgrupadaSedes = [] # Lista seteada con la info de las sedes
-
-        for k, grupo in agrupar:
-            nombreIPS, nombreEPS, nitEPS = k # Obtención de data según key del diccionario.
-            dictActual = { "nombreIPS": nombreIPS, "nombreEPS": nombreEPS, "nitEPS": nitEPS, "contratos": [] }
-           
-            for diccionario in grupo: # Busqueda de contratos por cada una de las iteraciones
-                dictActual["contratos"].append(diccionario["nombre_contrato"])
-            self.__dataAgrupadaSedes.append(dictActual) # Agregar el diccionario actual a la lista de data seteada
+            #return (dictAgrupar["nombre_ips"], dictAgrupar["nombre_eps"], dictAgrupar["nit_eps"])
+            return (dictAgrupar["nombre_ips"])
         
-        self.__listadoIPS = [dato["nombreIPS"] for dato in self.__dataAgrupadaSedes]
-        self.__listadoEPS = [dato["nombreEPS"] for dato in self.__dataAgrupadaSedes]
+        def data(dataSedes: list, tipoIPS: str): #sino hace nada eliminar
+            agrupar = groupby(dataSedes, agrupacionDict) # Agrupación de ips
+            list(filter(lambda x: x["nombre_ips"]==tipoIPS, self.__dataSedes))
+            
+        agrupar = groupby(self.__dataSedes, agrupacionDict) # Agrupación de ips
+        self.__dataAgrupadaSedes = [] # Lista seteada con la info de las sedes
+        for k, grupo in agrupar:
+            #nombreIPS, nombreEPS, nitEPS = k # Obtención de data según key del diccionario.
+            nombreIPS = k # Obtención de data según key del diccionario.
+            #dictActual = { "nombreIPS": nombreIPS, "nombreEPS": nombreEPS, "nitEPS": nitEPS, "contratos": [] }
+            dictActual = { "nombreIPS": nombreIPS, "contratos": [] }
+            self.__dataAgrupadaSedes.append(dictActual["nombreIPS"])
+            #for diccionario in grupo: # Busqueda de contratos por cada una de las iteraciones
+                #dictActual["contratos"].append(diccionario["nombre_contrato"])
+                
+                #dictActual["contratos"].append(diccionario["eps"][0]["contratos_asociados"])
 
+                #list(filter(lambda x: x == diccionario["eps"][0]["contratos_asociados"], nombreIPS))
+            #self.__dataAgrupadaSedes.append(dictActual) # Agregar el diccionario actual a la lista de data seteada
+        
+        tipoIPS = "Clínica Avidanti Santa Marta"
+        tipoEPS = "NUEVA EMPRESA PROMOTORA DE SALUD S.A."
+        """ print(self.__dataSedes) """
+        
+        self.__objetoIPS = list(filter(lambda x: x["nombre_ips"]==tipoIPS, self.__dataSedes))[0]["eps"]
+
+        #En caso de bug solucionar este
+        self.__listadoEPS = list(filter(lambda x: x["nombre_eps"]==tipoEPS, self.__objetoIPS))[0]
+
+        print(self.__listadoEPS)
+        """ self.__listadoEPS = list(filter(lambda x: x[1] == [0], self.__dataAgrupadaSedes))
+        print(self.__listadoEPS) """
         self.__listadoContratos = []
         for sede in self.__dataAgrupadaSedes:
             self.__listadoContratos += sede["contratos"]

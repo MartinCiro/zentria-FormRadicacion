@@ -28,10 +28,10 @@ class Peticiones:
         self.__urlAPIRadicacion = helper.getValue("Variables", "URLApiRadicacion")
         self.__dictEndpoints = {
             "estadoRadicado": "postgres/EstadoRadicado",
-            "consultarSedes": "postgres/consultarSedes",
+            "consultarSedes": "postgres/listaEapbs",
             "subirFormulario": "mongo/datosFormulario"
         }
-    
+
     def obtenerSedes(self):
         """
         Metodo encargado de la consulta de sedes actuales
@@ -42,7 +42,8 @@ class Peticiones:
         while intento < max_intentos:
             intento += 1
             try:
-                res = rq.get(f"{self.__urlAPI}/{self.__dictEndpoints['consultarSedes']}", timeout=10)
+                print(f"\t - URL: {self.__urlAPIRadicacion}/{self.__dictEndpoints['consultarSedes']}")
+                res = rq.get(f"{self.__urlAPIRadicacion}/{self.__dictEndpoints['consultarSedes']}", timeout=10)
                 response = loads(res.text)
                 return response
             except Exception as e:
@@ -100,5 +101,6 @@ class Peticiones:
             `estado (str):` Estado para actualizar en la relación de envío
         """
         data = json.dumps(datos)
-        res = rq.post(f"{self.__urlAPIRadicacion}/{self.__dictEndpoints['estadoRadicado']}/{segmento}", data=data, timeout=30)        
+        res = rq.post(f"{self.__urlAPIRadicacion}/{self.__dictEndpoints['estadoRadicado']}/{segmento}", data=data, timeout=30)
+        print(dumps(res.text, indent=4))        
         # ! TODO
