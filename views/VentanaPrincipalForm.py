@@ -7,6 +7,8 @@ from tkinter import ttk
 from itertools import groupby
 from datetime import datetime
 from tkinter import StringVar, messagebox
+from itertools import groupby
+from operator import itemgetter
 
 from controller.Ejecucion import Ejecucion
 from controller.Peticiones import Peticiones
@@ -60,38 +62,49 @@ class VentanaPrincipalForm:
             agrupar = groupby(dataSedes, agrupacionDict) # Agrupación de ips
             list(filter(lambda x: x["nombre_ips"]==tipoIPS, self.__dataSedes))
             
-        agrupar = groupby(self.__dataSedes, agrupacionDict) # Agrupación de ips
-        self.__dataAgrupadaSedes = [] # Lista seteada con la info de las sedes
-        for k, grupo in agrupar:
-            #nombreIPS, nombreEPS, nitEPS = k # Obtención de data según key del diccionario.
-            nombreIPS = k # Obtención de data según key del diccionario.
-            #dictActual = { "nombreIPS": nombreIPS, "nombreEPS": nombreEPS, "nitEPS": nitEPS, "contratos": [] }
-            dictActual = { "nombreIPS": nombreIPS, "contratos": [] }
-            self.__dataAgrupadaSedes.append(dictActual["nombreIPS"])
-            #for diccionario in grupo: # Busqueda de contratos por cada una de las iteraciones
-                #dictActual["contratos"].append(diccionario["nombre_contrato"])
+        def agrupar_ips(data):
+            data_sorted = sorted(data, key=itemgetter('nombre_ips'))
+            agrupar = groupby(data_sorted, key=itemgetter('nombre_ips'))
+            
+            data_agrupada = []
+            for nombreIPS, grupo in agrupar:
+                dict_actual = {"nombreIPS": nombreIPS, "contratos": []}
                 
-                #dictActual["contratos"].append(diccionario["eps"][0]["contratos_asociados"])
-
-                #list(filter(lambda x: x == diccionario["eps"][0]["contratos_asociados"], nombreIPS))
-            #self.__dataAgrupadaSedes.append(dictActual) # Agregar el diccionario actual a la lista de data seteada
+                # Iterar sobre cada ítem en el grupo
+                for diccionario in grupo:
+                    # Agregar contratos asociados de cada EPS a la lista de contratos
+                    for eps in diccionario["eps"]:
+                        dict_actual["contratos"] += eps["contratos_asociados"]
+                
+                data_agrupada.append(dict_actual)
+            
+            return data_agrupada
         
+        # Agrupar datos
+        self.__dataAgrupadaSedes = agrupar_ips(self.__dataSedes)
+        
+        # Buscar un tipo específico de IPS y EPS
         tipoIPS = "Clínica Avidanti Santa Marta"
         tipoEPS = "NUEVA EMPRESA PROMOTORA DE SALUD S.A."
-        """ print(self.__dataSedes) """
+
+        # Buscar el objeto IPS
+        objeto_ips = next((item for item in self.__dataSedes if item["nombre_ips"] == tipoIPS), None)
+        if objeto_ips:
+            # Encontrar el EPS dentro del objeto IPS
+            listado_eps = next((eps for eps in objeto_ips["eps"] if eps["nombre_eps"] == tipoEPS), None)
+            if listado_eps:
+                self.__listadoContratos = listado_eps["contratos_asociados"]
+
         
-        self.__objetoIPS = list(filter(lambda x: x["nombre_ips"]==tipoIPS, self.__dataSedes))[0]["eps"]
+        self.__listadoIPS = list(filter(lambda x: x["nombre_ips"]==tipoIPS, self.__dataSedes))[0]["eps"]
 
         #En caso de bug solucionar este
-        self.__listadoEPS = list(filter(lambda x: x["nombre_eps"]==tipoEPS, self.__objetoIPS))[0]
-
-        print(self.__listadoEPS)
-        """ self.__listadoEPS = list(filter(lambda x: x[1] == [0], self.__dataAgrupadaSedes))
-        print(self.__listadoEPS) """
+        self.__listadoEPS = list(filter(lambda x: x["nombre_eps"]==tipoEPS, self.__listadoIPS))[0]
         self.__listadoContratos = []
+        
         for sede in self.__dataAgrupadaSedes:
             self.__listadoContratos += sede["contratos"]
-
+        print(self.__listadoIPS)    
         self.__listadoIPS.insert(0, "-- Selecciona una IPS --") # Se les añade una opción por Deafult
         self.__listadoEPS.insert(0, "-- Selecciona una EPS --") # Se les añade una opción por Deafult
         self.__listadoContratos.insert(0, "-- Selecciona un Contrato --") # Se les añade una opción por Deafult
