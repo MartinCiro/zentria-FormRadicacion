@@ -75,7 +75,7 @@ class Helpers:
     
     # Nos permite cargar una imagen de forma dinamica
     def getImage(self, key, size): 
-        image = Image.open(self.getRoutes(key,"Value")).resize(size, Image.ANTIALIAS)
+        image = Image.open(self.getRoutes(key,"Value")).resize(size, Image.LANCZOS)
         return ImageTk.PhotoImage(image)  
 
     #Nos permite realizar un centrado de la ventana

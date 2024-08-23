@@ -58,11 +58,11 @@ class VentanaPrincipalForm:
             #return (dictAgrupar["nombre_ips"], dictAgrupar["nombre_eps"], dictAgrupar["nit_eps"])
             return (dictAgrupar["nombre_ips"])
         
-        def data(dataSedes: list, tipoIPS: str): #sino hace nada eliminar
+        def data(dataSedes: list, tipoIPS: str): #sino hace nada eliminar -> No se esta usando en ninguna parte
             agrupar = groupby(dataSedes, agrupacionDict) # Agrupación de ips
             list(filter(lambda x: x["nombre_ips"]==tipoIPS, self.__dataSedes))
             
-        def agrupar_ips(data):
+        def agrupar_ips(data): # Esta funcion agrupa po nombreIps y los contratos asociados
             data_sorted = sorted(data, key=itemgetter('nombre_ips'))
             agrupar = groupby(data_sorted, key=itemgetter('nombre_ips'))
             
@@ -82,6 +82,8 @@ class VentanaPrincipalForm:
         
         # Agrupar datos
         self.__dataAgrupadaSedes = agrupar_ips(self.__dataSedes)
+        print(f"esto es dataSedes {self.__dataSedes}\n")
+        print(f"esto es dataAgrupadaSedes {self.__dataAgrupadaSedes}")
         
         # Buscar un tipo específico de IPS y EPS
         tipoIPS = "Clínica Avidanti Santa Marta"
@@ -96,15 +98,16 @@ class VentanaPrincipalForm:
                 self.__listadoContratos = listado_eps["contratos_asociados"]
 
         
-        self.__listadoIPS = list(filter(lambda x: x["nombre_ips"]==tipoIPS, self.__dataSedes))[0]["eps"]
+        #self.__listadoIPS = list(filter(lambda x: x["nombre_ips"]==tipoIPS, self.__dataSedes))[0]["eps"] # Debe ser una lista, agrupar tdas las ips para la insercion
 
         #En caso de bug solucionar este
-        self.__listadoEPS = list(filter(lambda x: x["nombre_eps"]==tipoEPS, self.__listadoIPS))[0]
+        #self.__listadoEPS = list(filter(lambda x: x["nombre_eps"]==tipoEPS, self.__listadoIPS))[0] #Esto es para el especifico
         self.__listadoContratos = []
         
         for sede in self.__dataAgrupadaSedes:
             self.__listadoContratos += sede["contratos"]
-        print(self.__listadoIPS)    
+        print(f"Esto es data {self.__listadoIPS}")
+
         self.__listadoIPS.insert(0, "-- Selecciona una IPS --") # Se les añade una opción por Deafult
         self.__listadoEPS.insert(0, "-- Selecciona una EPS --") # Se les añade una opción por Deafult
         self.__listadoContratos.insert(0, "-- Selecciona un Contrato --") # Se les añade una opción por Deafult
