@@ -74,8 +74,12 @@ class Helpers:
         return data
     
     # Nos permite cargar una imagen de forma dinamica
-    def getImage(self, key, size): 
-        image = Image.open(self.getRoutes(key,"Value")).resize(size, Image.LANCZOS)
+    def getImage(self, key, size):
+        # Abrir la imagen
+        image = Image.open(self.getRoutes(key, "Value"))
+        # Redimensionar la imagen con el filtro LANCZOS (anteriormente ANTIALIAS)
+        image = image.resize(size, Image.Resampling.LANCZOS)
+        # Convertir a un objeto PhotoImage de Tkinter
         return ImageTk.PhotoImage(image)  
 
     #Nos permite realizar un centrado de la ventana

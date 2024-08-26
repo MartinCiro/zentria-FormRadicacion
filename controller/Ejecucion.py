@@ -99,9 +99,9 @@ class Ejecucion:
         try:
             if("1" in self.formSegmento):
                 self.__botEjecutar = "idWorkFlowGeneracionRIPS"
-                peti.ejecutarBotElectroNeek(self.__botEjecutar)
                 datos = self._definirMongoDataAPI()
                 peti.subirDatosFormulario(datos)
+                peti.ejecutarBotElectroNeek(self.__botEjecutar)
                 return
             if("2" not in self.formSegmento):
                 peti.ejecutarBotElectroNeek(self.__botEjecutar)

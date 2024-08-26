@@ -52,61 +52,30 @@ class VentanaPrincipalForm:
         if(len(self.__dataSedes) == 0):
             messagebox.showinfo(message = "No se ha podido obtener la información de las sedes para Zentria.", title = "¡ERROR!")
             return
-        
-        # Función para obtener la clave de agrupación por cada dato de la respuesta de la API
-        def agrupacionDict(dictAgrupar: dict):
-            #return (dictAgrupar["nombre_ips"], dictAgrupar["nombre_eps"], dictAgrupar["nit_eps"])
-            return (dictAgrupar["nombre_ips"])
-        
-        def data(dataSedes: list, tipoIPS: str): #sino hace nada eliminar -> No se esta usando en ninguna parte
-            agrupar = groupby(dataSedes, agrupacionDict) # Agrupación de ips
-            list(filter(lambda x: x["nombre_ips"]==tipoIPS, self.__dataSedes))
-            
-        def agrupar_ips(data): # Esta funcion agrupa po nombreIps y los contratos asociados
+          
+        def obtener_eps_por_ips(data, nombre_ips):
+            # Primero, ordenamos los datos por 'nombre_ips' para usar groupby
             data_sorted = sorted(data, key=itemgetter('nombre_ips'))
+            
+            # Agrupamos los datos por 'nombre_ips'
             agrupar = groupby(data_sorted, key=itemgetter('nombre_ips'))
             
-            data_agrupada = []
+            # Buscar el grupo correspondiente al 'nombre_ips' solicitado
             for nombreIPS, grupo in agrupar:
-                dict_actual = {"nombreIPS": nombreIPS, "contratos": []}
-                
-                # Iterar sobre cada ítem en el grupo
-                for diccionario in grupo:
-                    # Agregar contratos asociados de cada EPS a la lista de contratos
-                    for eps in diccionario["eps"]:
-                        dict_actual["contratos"] += eps["contratos_asociados"]
-                
-                data_agrupada.append(dict_actual)
+                if nombreIPS == nombre_ips:
+                    # Encontramos el grupo correspondiente, ahora recolectamos las EPS asociadas
+                    eps_asociadas = []
+                    for diccionario in grupo:
+                        for eps in diccionario["eps"]:
+                            eps_asociadas.append(eps)
+                    return eps_asociadas
             
-            return data_agrupada
+            # Si no se encuentra la IPS, devolvemos una lista vacía o un mensaje indicativo
+            return []
         
-        # Agrupar datos
-        self.__dataAgrupadaSedes = agrupar_ips(self.__dataSedes)
-        print(f"esto es dataSedes {self.__dataSedes}\n")
-        print(f"esto es dataAgrupadaSedes {self.__dataAgrupadaSedes}")
-        
-        # Buscar un tipo específico de IPS y EPS
-        tipoIPS = "Clínica Avidanti Santa Marta"
-        tipoEPS = "NUEVA EMPRESA PROMOTORA DE SALUD S.A."
-
-        # Buscar el objeto IPS
-        objeto_ips = next((item for item in self.__dataSedes if item["nombre_ips"] == tipoIPS), None)
-        if objeto_ips:
-            # Encontrar el EPS dentro del objeto IPS
-            listado_eps = next((eps for eps in objeto_ips["eps"] if eps["nombre_eps"] == tipoEPS), None)
-            if listado_eps:
-                self.__listadoContratos = listado_eps["contratos_asociados"]
-
-        
-        #self.__listadoIPS = list(filter(lambda x: x["nombre_ips"]==tipoIPS, self.__dataSedes))[0]["eps"] # Debe ser una lista, agrupar tdas las ips para la insercion
-
-        #En caso de bug solucionar este
-        #self.__listadoEPS = list(filter(lambda x: x["nombre_eps"]==tipoEPS, self.__listadoIPS))[0] #Esto es para el especifico
-        self.__listadoContratos = []
-        
-        for sede in self.__dataAgrupadaSedes:
-            self.__listadoContratos += sede["contratos"]
-        print(f"Esto es data {self.__listadoIPS}")
+        self.__listadoIPS = [item["nombre_ips"] for item in self.__dataSedes]
+        self.__listadoEPS =[]
+        self.__listadoContratos =[]
 
         self.__listadoIPS.insert(0, "-- Selecciona una IPS --") # Se les añade una opción por Deafult
         self.__listadoEPS.insert(0, "-- Selecciona una EPS --") # Se les añade una opción por Deafult
@@ -124,11 +93,16 @@ class VentanaPrincipalForm:
 
         self.dfExcel = ""
         # Endregion - Variables globales a usar dentro del form
-        
+          
         # region Metodos internos
+        # Metodo para actualizar los combobox despues de cada interaccion
         def setTipoSeleccion(e):
             contrato = tipoContrato.get()
             regimen = tipoRegimen.get()
+            dataEps = obtener_eps_por_ips(self.__dataSedes, tipoIPS.get())
+            tipoEPS['values'] = [eps["nombre_eps"] for eps in dataEps]
+            tipoContrato['values'] = [eps["contratos_asociados"] for eps in dataEps][0]
+
             if("Selecciona" in contrato or "Selecciona" in regimen):
                 helpers.SetInfoDisabled(txtInfoProceso, "Configura todo el proceso.")
             else:
@@ -224,6 +198,7 @@ class VentanaPrincipalForm:
         # Label para ComboBox
         lblRadicacionIPS = ttk.Label(frameLeft, text = "IPS del proceso actual:", font = ('Times', 12), background = '#fcfcfc', width = 25)
         lblRadicacionIPS.grid(row = 0, column = 0, padx = 0, pady = (10, 2),  sticky = "ew")
+       
         # ComboBox seleccionar IPS
         tipoIPS = ttk.Combobox(frameLeft, values = self.__listadoIPS, width = 30)
         tipoIPS.current(0)
