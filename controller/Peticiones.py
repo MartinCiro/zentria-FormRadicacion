@@ -42,7 +42,6 @@ class Peticiones:
         while intento < max_intentos:
             intento += 1
             try:
-                print(f"\t - URL: {self.__urlAPIRadicacion}/{self.__dictEndpoints['consultarSedes']}")
                 res = rq.get(f"{self.__urlAPIRadicacion}/{self.__dictEndpoints['consultarSedes']}", timeout=10)
                 response = loads(res.text)
                 return response
@@ -63,14 +62,15 @@ class Peticiones:
                 json = datosFormulario,
                 timeout = 10
             )
-            print(datosFormulario)
+            print(datosFormulario) # Eliminar, solo pruebas
             respuesta = loads(res.text)
-            print(f"\n Respuesta de la carga de info al formulario: \n - {respuesta}")
+            #print(f"\n Respuesta de la carga de info al formulario: \n - {respuesta}")
         except Exception as e:
             print(f"Falló en la carga de datos del formulario, error: {e}")
         finally:
             return respuesta
     
+
     def ejecutarBotElectroNeek(self, idBot: str):
         """
         Actualización del estado de la factura en la tabla de items_facturas
@@ -80,16 +80,32 @@ class Peticiones:
         """
         exito = False
         try:
+            # Preparar la solicitud
             idBotElectroNeek = helper.getValue("APINeek", idBot)
             self.__urlNeekApi = self.__urlNeekApi.replace("$id$", idBotElectroNeek)
             cabeceras = { "accept": "application/json", "content-type": "application/json", "authorization": f"Bearer {self.__keyNeekApi}" }
-            ejecutarBot = rq.post(url = self.__urlNeekApi, headers = cabeceras)
-            print(dumps(ejecutarBot.text, indent = 4))
-            exito = True
+            ejecutarBot = rq.post(url=self.__urlNeekApi, headers=cabeceras)
+
+            # Obtener la respuesta JSON como diccionario
+            response_dict = ejecutarBot.json()
+
+            # Verificar si la respuesta indica éxito
+            status_code = response_dict.get("statusCode")
+            launch_id = response_dict.get("launch_id")
+            
+            # Validar éxito
+            if (status_code == 200) or (launch_id is not None):
+                exito = True
+            else:
+                mensaje_error = response_dict.get("message", "No se proporcionó un mensaje de error")
+                print(f"Hubo un error en la ejecución: {mensaje_error}")
+        
         except Exception as e:
-            print(f"Imposible ejecutar el lanzamiento del bot en ElectroNeek API, error: {e}")
+            print(f"Imposible ejecutar desde api electroneek: {e}")
+            # Manejar errores al decodificar JSON si ocurre
         finally:
             return exito
+
     
     def actualizarFechaRelacionEnvio(self, datos: dict, segmento: str):
         """
@@ -101,6 +117,18 @@ class Peticiones:
             `estado (str):` Estado para actualizar en la relación de envío
         """
         data = json.dumps(datos)
-        res = rq.post(f"{self.__urlAPIRadicacion}/{self.__dictEndpoints['estadoRadicado']}/{segmento}", data=data, timeout=30)
-        print(dumps(res.text, indent=4))        
-        # ! TODO
+        exito = False
+        try:
+            res = rq.post(f"{self.__urlAPIRadicacion}/{self.__dictEndpoints['estadoRadicado']}/{segmento}", data=data, timeout=30)
+        
+            response_dict = res.json()
+            if response_dict["statusCode"] == 200:
+                    exito = True
+            else: 
+                print(f"Hubo un error en la ejecucion '{response_dict["message"]}'")        
+            # ! TODO
+ 
+        except Exception as e:
+            print(f"Imposible actualizar las fechas: {e}")
+        finally:
+            return exito

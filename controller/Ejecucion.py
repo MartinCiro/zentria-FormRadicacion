@@ -5,6 +5,7 @@
 from controller.Peticiones import Peticiones
 from controller.utils.Helpers import Helpers
 from datetime import datetime
+import traceback
 # Endregion - Importación de librerias y clases.
 
 # Region - Inicialización de clases para uso de metodos.
@@ -62,32 +63,41 @@ class Ejecucion:
     
     def _definirPostgresDataAPI(self):
         """
-        Este metodo se encargará de setear la data para
+        Este método se encargará de setear la data para
         ser enviada a la API de Radicación de Zentria y
         así poder ser consultada por otros bots.
         """
         if not self.formFecha:
             self.formFecha = datetime.now().strftime("%Y/%m/%d")
-        objetoDato={
-                "numero_radicado": self.formValidacion,
-                "fecha_rips": "",
-                "fecha_soporte": "",
-                "fecha_eapb": ""
-        }            
-        if("2" in self.formSegmento):
+        
+        objetoDato = {
+            "numero_radicado": self.formValidacion,
+            "fecha_rips": "",
+            "fecha_soporte": "",
+            "fecha_eapb": ""
+        }
+        
+        if "2" in self.formSegmento:
             # El 2 no ejecuta bot
-            #self.__botEjecutar = "idWorkFlowCargarSoportesSFTP"
             objetoDato["fecha_rips"] = self.formFecha
             return objetoDato, "certificado-rips"
-        if("3" in self.formSegmento):
-            #self.__botEjecutar = "idWorkFlowCargarSoportesSFTP"
+        elif "3" in self.formSegmento:
             objetoDato["fecha_soporte"] = self.formFecha
             return objetoDato, "soportes-eapb"
-        if("4" in self.formSegmento):
-            #self.__botEjecutar = "idWorkFlowCargarSoportesSFTP"
+        elif "4" in self.formSegmento:
             objetoDato["fecha_eapb"] = self.formFecha
             return objetoDato, "radicado-eapb"
-        
+        else:
+            # Manejar el caso donde no hay segmento válido
+            print("Segmento no válido. No se devolverán datos.")
+            return {}, None
+
+
+    # metodo para validar la respuesta del api
+    def _validar_respuesta(self, respuesta):
+        if respuesta.get('status_code') == 200:
+            return True
+        return False 
 
     def orquestarEjecucion(self):
         """
@@ -100,14 +110,26 @@ class Ejecucion:
             if("1" in self.formSegmento):
                 self.__botEjecutar = "idWorkFlowGeneracionRIPS"
                 datos = self._definirMongoDataAPI()
-                peti.subirDatosFormulario(datos)
-                peti.ejecutarBotElectroNeek(self.__botEjecutar)
-                return
-            if("2" not in self.formSegmento):
-                peti.ejecutarBotElectroNeek(self.__botEjecutar)
-            datos, segmento = self._definirPostgresDataAPI()
-            peti.actualizarFechaRelacionEnvio(datos, segmento)
+
+                # Subir los datos al formulario y validar la respuesta
+                respuesta = peti.subirDatosFormulario(datos)
+                if self._validar_respuesta(respuesta):
+                    print(peti.ejecutarBotElectroNeek(self.__botEjecutar))
+         
+                if("2" not in self.formSegmento):
+                    peti.ejecutarBotElectroNeek(self.__botEjecutar)
+                datos, segmento = self._definirPostgresDataAPI()
+
+                 # Verificar si datos y segmento no son None
+                if datos and segmento:
+                    peti.actualizarFechaRelacionEnvio(datos, segmento)
+                    exito["status"] = True
+                else:
+                    exito["mensaje"] = "No se pudieron obtener datos o segmento de Postgres API."
+                    exito["status"] = True
         except Exception as e:
             exito["mensaje"] = f"Ocurrió un error en la ejecución del formulario, error: {e}"
+            detailed_error_message = f"Detalles del error:\n{traceback.format_exc()}"
+            print(detailed_error_message)
         finally:
             return exito

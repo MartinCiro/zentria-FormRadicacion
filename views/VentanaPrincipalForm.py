@@ -140,7 +140,8 @@ class VentanaPrincipalForm:
                         ejec.formFecha = txtFechaProceso.get().strip()
                         ejec.formValidacion = txtRelacionEnvio.get().strip()
                         validacion = ejec.orquestarEjecucion()
-                        if(validacion):
+                        print(validacion)
+                        if(validacion["status"]):
                             messagebox.showinfo(message = "Se ha iniciado la ejecución con éxito, ya puedes cerrar esta ventana.", title = "¡Éxito!")
                         else:
                             messagebox.showerror(message = "Ocurrió un error con la ejecución, contacta a soporte.", title = "¡ERROR!")

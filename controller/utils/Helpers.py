@@ -119,7 +119,6 @@ class Helpers:
         deleteZip = deleteFile.replace(".zip","")
         ruta_extraccion = rutaZip.replace(deleteFile,"")
         ruta_extraida = ruta_extraccion + "\\" + deleteZip
-        #print(ruta_extraccion + "\\" + deleteZip)
         
         try:
             shutil.rmtree(ruta_extraida)
