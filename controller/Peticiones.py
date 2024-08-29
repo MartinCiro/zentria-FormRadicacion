@@ -24,8 +24,9 @@ class Peticiones:
         self.__keyNeekApi = helper.desEncriptarData(helper.getValue("APINeek", "key"))
         self.__urlNeekApi = helper.getValue("APINeek", "workFlowURL")
 
-        self.__urlAPI = helper.getValue("Variables", "URLApi")
+        # self.__urlAPI = helper.getValue("Variables", "URLApi") # Se cambio por URLApiRadicacionMongo
         self.__urlAPIRadicacion = helper.getValue("Variables", "URLApiRadicacion")
+        self.__urlApiRadicacionMongo = helper.getValue("Variables", "URLApiRadicacionMongo")
         self.__dictEndpoints = {
             "estadoRadicado": "postgres/EstadoRadicado",
             "consultarSedes": "postgres/listaEapbs",
@@ -58,12 +59,16 @@ class Peticiones:
         respuesta = []
         try:
             res = rq.post(
-                url = f"{self.__urlAPIRadicacion}/{self.__dictEndpoints['subirFormulario']}",
+                url = f"{self.__urlApiRadicacionMongo}/{self.__dictEndpoints['subirFormulario']}",
                 json = datosFormulario,
                 timeout = 10
             )
-            print(datosFormulario) # Eliminar, solo pruebas
             respuesta = loads(res.text)
+            # print(respuesta) # Eliminar, solo pruebas
+            response_dict = res.json()
+
+            print(datosFormulario)
+            
             #print(f"\n Respuesta de la carga de info al formulario: \n - {respuesta}")
         except Exception as e:
             print(f"Falló en la carga de datos del formulario, error: {e}")

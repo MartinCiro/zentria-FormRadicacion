@@ -80,7 +80,7 @@ class VentanaPrincipalForm:
         self.__listadoIPS.insert(0, "-- Selecciona una IPS --") # Se les añade una opción por Deafult
         self.__listadoEPS.insert(0, "-- Selecciona una EPS --") # Se les añade una opción por Deafult
         self.__listadoContratos.insert(0, "-- Selecciona un Contrato --") # Se les añade una opción por Deafult
-        self.__listadoRegimen = ["-- Selecciona un Regimen --", "Subsidiado", "Contributivo"]
+        self.__listadoRegimen = ["-- Selecciona un Regimen --", "Subsidiado", "Subsidiado 2024", "Contributivo", "Contributivo 2024"]
         self.__listadoSegmentos = (helpers.getValue("SegmentosFormulario", "segmentos")).split("|")
         self.__listadoEstados = ["-- Selecciona un estado --", "RADICADO", "ENVIADO"]
 

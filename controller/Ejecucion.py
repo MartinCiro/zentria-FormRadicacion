@@ -114,7 +114,7 @@ class Ejecucion:
                 # Subir los datos al formulario y validar la respuesta
                 respuesta = peti.subirDatosFormulario(datos)
                 if self._validar_respuesta(respuesta):
-                    print(peti.ejecutarBotElectroNeek(self.__botEjecutar))
+                    exito["status"] = peti.ejecutarBotElectroNeek(self.__botEjecutar)
          
                 if("2" not in self.formSegmento):
                     peti.ejecutarBotElectroNeek(self.__botEjecutar)
@@ -122,8 +122,7 @@ class Ejecucion:
 
                  # Verificar si datos y segmento no son None
                 if datos and segmento:
-                    peti.actualizarFechaRelacionEnvio(datos, segmento)
-                    exito["status"] = True
+                    exito["status"] = peti.actualizarFechaRelacionEnvio(datos, segmento)
                 else:
                     exito["mensaje"] = "No se pudieron obtener datos o segmento de Postgres API."
                     exito["status"] = True
