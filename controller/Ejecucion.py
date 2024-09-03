@@ -116,16 +116,17 @@ class Ejecucion:
                 if self._validar_respuesta(respuesta):
                     exito["status"] = peti.ejecutarBotElectroNeek(self.__botEjecutar)
          
-                if("2" not in self.formSegmento):
-                    peti.ejecutarBotElectroNeek(self.__botEjecutar)
-                datos, segmento = self._definirPostgresDataAPI()
+            if("2" not in self.formSegmento):
+                peti.ejecutarBotElectroNeek(self.__botEjecutar)
+            datos, segmento = self._definirPostgresDataAPI()
 
-                 # Verificar si datos y segmento no son None
-                if datos and segmento:
-                    exito["status"] = peti.actualizarFechaRelacionEnvio(datos, segmento)
-                else:
-                    exito["mensaje"] = "No se pudieron obtener datos o segmento de Postgres API."
-                    exito["status"] = True
+            
+            # Verificar si datos y segmento no son None
+            if datos and segmento:
+                exito["status"] = peti.actualizarFechaRelacionEnvio(datos, segmento)
+            else:
+                exito["mensaje"] = "No se pudieron obtener datos o segmento de Postgres API."
+                exito["status"] = True
         except Exception as e:
             exito["mensaje"] = f"Ocurrió un error en la ejecución del formulario, error: {e}"
             detailed_error_message = f"Detalles del error:\n{traceback.format_exc()}"

@@ -82,8 +82,6 @@ class VentanaPrincipalForm:
         self.__listadoContratos.insert(0, "-- Selecciona un Contrato --") # Se les añade una opción por Deafult
         self.__listadoRegimen = ["-- Selecciona un Regimen --", "Subsidiado", "Subsidiado 2024", "Contributivo", "Contributivo 2024"]
         self.__listadoSegmentos = (helpers.getValue("SegmentosFormulario", "segmentos")).split("|")
-        self.__listadoEstados = ["-- Selecciona un estado --", "RADICADO", "ENVIADO"]
-
         tipoIPS = StringVar() # Asignación de tipo a una variable
         tipoEPS = StringVar() # Asignación de tipo a una variable
         tipoContrato = StringVar() # Asignación de tipo a una variable
@@ -236,15 +234,6 @@ class VentanaPrincipalForm:
         tipoRegimen.grid(row = 7, column = 0, padx = 0, pady = 2,  sticky = "ew")
         tipoRegimen.bind("<<ComboboxSelected>>", setTipoSeleccion)
 
-        # Apartado radicacion estado relacion
-        # Label para ComboBox de Estados de radicación
-        lblEstadoRelacion = ttk.Label(frameLeft, text = "Seleccionar estado de (Relación envío):", font = ('Times', 12), background = '#fcfcfc', width = 25)
-        lblEstadoRelacion.grid(row = 8, column = 0, padx = 0, pady = (10, 2),  sticky = "ew")
-        # ComboBox seleccionar el contrato con la EPS
-        tipoEstado = ttk.Combobox(frameLeft, values = self.__listadoEstados, width = 30, font = ('Times', 10))
-        tipoEstado.current(0)
-        tipoEstado.grid(row = 9, column = 0, padx = 0, pady = 2,  sticky = "ew")
-        tipoEstado.bind("<<ComboboxSelected>>", setTipoSeleccion)
         
         # =========================================================================
         # | Frame Left Body

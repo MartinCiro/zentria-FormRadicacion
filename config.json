@@ -19,6 +19,6 @@
         "URLApiRadicacion": "http://172.206.196.43:3100"
     },
     "SegmentosFormulario": {
-        "segmentos": "-- Selecciona un segmento de ejecucion --|1) Generacion de RIPS - GomediSys|2) Certificado RIPS - GomediSys|3) Cargar Soportes|4) Radicado Entidad"
+        "segmentos": "-- Selecciona un segmento de ejecucion --|1) Generacion de relacion y RIPS - GomediSys|2) Certificado RIPS - GomediSys|3) Cargar Soportes|4) Radicado Entidad"
    }
 }

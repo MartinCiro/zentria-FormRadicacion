@@ -127,10 +127,12 @@ class Peticiones:
             res = rq.post(f"{self.__urlAPIRadicacion}/{self.__dictEndpoints['estadoRadicado']}/{segmento}", data=data, timeout=30)
         
             response_dict = res.json()
-            if response_dict["statusCode"] == 200:
+            print(response_dict)
+            if response_dict["status_code"] == 200:
                     exito = True
             else: 
-                print(f"Hubo un error en la ejecucion '{response_dict["message"]}'")        
+                print(f"Hubo un error en la ejecucion '{response_dict["message"]}'")
+                return print(f"Hubo un error en la ejecucion '{response_dict["message"]}'")        
             # ! TODO
  
         except Exception as e:
